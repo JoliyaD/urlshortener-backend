@@ -20,7 +20,7 @@ public class UrlShortenerController {
     public ResponseEntity<Map<String, String>> shortenUrl(@RequestBody UrlRequest request) {
 
         String shortCode = urlShortenerService.shortenUrl(request.getOriginalUrl());
-        String shortUrl = "http://localhost:8080/" + shortCode;
+        String shortUrl = "https://urlshortener-backend-4uge.onrender.com/" + shortCode;
 
         Map<String, String> response = new HashMap<>();
         response.put("shortCode", shortCode);
