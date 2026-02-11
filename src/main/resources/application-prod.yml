@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: ${DATABASE_URL}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+app:
+  base-url: https://urlshortener-backend-4uge.onrender.com

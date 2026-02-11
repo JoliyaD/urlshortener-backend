@@ -1,6 +1,7 @@
 package com.newproject.urlshortener;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,14 +14,20 @@ public class UrlShortenerController {
     @Autowired
     private UrlShortenerService urlShortenerService;
 
-    // ============================
-    // POST: Create Short URL
-    // ============================
-    @PostMapping("/api/shorten")
-    public ResponseEntity<Map<String, String>> shortenUrl(@RequestBody UrlRequest request) {
+    // Base URL comes from application-dev.yml or application-prod.yml
+    @Value("${app.base-url}")
+    private String baseUrl;
 
-        String shortCode = urlShortenerService.shortenUrl(request.getOriginalUrl());
-        String shortUrl = "https://urlshortener-backend-4uge.onrender.com/" + shortCode;
+    @PostMapping("/api/shorten")
+    public ResponseEntity<Map<String, String>> shortenUrl(
+            @RequestBody UrlRequest request) {
+
+        // Service returns ONLY the short code
+        String shortCode = urlShortenerService
+                .shortenUrl(request.getOriginalUrl());
+
+        // Controller builds the full URL
+        String shortUrl = baseUrl + "/" + shortCode;
 
         Map<String, String> response = new HashMap<>();
         response.put("shortCode", shortCode);
@@ -29,13 +36,12 @@ public class UrlShortenerController {
         return ResponseEntity.ok(response);
     }
 
-    // ============================
-    // GET: Redirect to Original URL
-    // ============================
     @GetMapping("/{shortCode}")
-    public ResponseEntity<Void> redirect(@PathVariable String shortCode) {
+    public ResponseEntity<Void> redirect(
+            @PathVariable String shortCode) {
 
-        String originalUrl = urlShortenerService.getOriginalUrl(shortCode);
+        String originalUrl =
+                urlShortenerService.getOriginalUrl(shortCode);
 
         if (originalUrl == null) {
             return ResponseEntity.notFound().build();
@@ -46,4 +52,3 @@ public class UrlShortenerController {
                 .build();
     }
 }
-
